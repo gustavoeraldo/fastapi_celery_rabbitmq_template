@@ -1,0 +1,44 @@
+version: "3"
+services:
+  my-api: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ".env"
+    restart: unless-stopped
+    stop_grace_period: "3s"
+    image: "${IMAGE_NAME}:${SERVER_VERSION}"
+    ports:
+      - "${DOCKER_WEB_PORT_FORWARD}:8000"
+
+    container_name: "${CONTAINER_NAME}"
+    networks:
+      - rabbit_nw
+
+  worker: 
+    container_name: "${CELERY_CONTAINER_NAME}"
+    image: "${CELERY_CONTAINER_NAME}:${SERVER_VERSION}"
+    build: 
+      context: "."
+    command: "celery -A app.v1.Config.celery_app worker --loglevel=INFO --autoscale=10,3 -n worker1@guest"
+    networks:
+      - rabbit_nw
+
+  rabbitmq3:
+    env_file:
+      - ".env"
+    container_name: "${RABBIT_CONTAINER_NAME}"
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+      - 5672:5672
+      - 25676:25676
+    networks:
+      - rabbit_nw
+
+networks:
+  rabbit_nw:
+    driver: bridge
+    name: "${NETWORK_STAGE}"
+    
