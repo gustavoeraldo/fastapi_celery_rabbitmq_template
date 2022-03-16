@@ -13,7 +13,7 @@ For this particular project you must have installed in or machine:
 
 Clone the repository:
 ```bash
-git clone https://github.com/gustavoeraldo/rabbitmq_test.git
+git clone https://github.com/gustavoeraldo/fastapi_celery_rabbitmq_template.git
 ```
 
 Get into the project file: `cd rabbitmq_test`.
